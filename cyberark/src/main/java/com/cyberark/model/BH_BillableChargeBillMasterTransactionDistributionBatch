@@ -1,0 +1,32 @@
+package com.cyberark.model;
+
+
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Data
+@Entity
+@Table(name="bh_billablechargebillmastertransactiondistributionbatch")
+public class BH_BillableChargeBillMasterTransactionDistributionBatch {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long billableChargeBillMasterTransactionDistributionBatchID;
+    @Column(name = "billMasterTransactionDistributionBatchID")
+    private long billMasterTransactionDistributionBatchID;
+    @Column(name = "billableChargeID")
+    private long billableChargeID;
+
+    public BH_BillableChargeBillMasterTransactionDistributionBatch() {
+    }
+
+    @Override
+    public String toString() {
+        return "BH_BillableChargeBillMasterTransactionDistributionBatch{" +
+                "billableChargeBillMasterTransactionDistributionBatchID=" + billableChargeBillMasterTransactionDistributionBatchID +
+                ", billMasterTransactionDistributionBatchID=" + billMasterTransactionDistributionBatchID +
+                ", billableChargeID=" + billableChargeID +
+                '}';
+    }
+}

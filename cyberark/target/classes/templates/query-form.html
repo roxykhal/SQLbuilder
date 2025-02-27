@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Query Builder System</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <script>
+        function getColumns() {
+            var entity = document.getElementById("entitySelect").value;
+            var columnsDiv = document.getElementById("columns");
+            columnsDiv.innerHTML = "";
+            var label = document.createElement("label");
+            label.setAttribute("for", "columns");
+            label.innerText = "Columns:";
+            columnsDiv.appendChild(label);
+            var select = document.createElement("select");
+            select.setAttribute("id", "columnsSelect");
+            select.setAttribute("name", "columns");
+            select.setAttribute("multiple", true);
+            select.setAttribute("th:field", "*{columns}");
+            select.setAttribute("class", "form-control");
+            var option = document.createElement("option");
+            option.setAttribute("value", "");
+            option.setAttribute("disabled", true);
+            option.setAttribute("selected", true);
+            option.innerText = "Select columns";
+            select.appendChild(option);
+            fetch("/query-builder/columns?entityName=" + entity)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(typeof data);
+                    console.log(data);
+                    data.forEach(column => {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", column);
+                        option.innerText = column;
+                        select.appendChild(option);
+                    });
+                    columnsDiv.appendChild(select);
+                });
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <!-- Brand -->
+<!--    <a class="navbar-brand" href="#">Query Builder</a>-->
+
+    <!-- Toggler/collapsibe Button -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar links -->
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/query-form}">Query Builder</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<body>
+<h1>Query Form</h1>
+<form th:action="@{/query-builder}" th:object="${queryForm}" method="post">
+    <div>
+        <label for="entity">Entity:</label>
+        <select id="entitySelect" name="entity" onchange="getColumns()" th:field="*{entity}">
+            <option value="" disabled="disabled" selected="selected">Select an entity</option>
+            <option th:each="entity : ${queryEntities}" th:value="${entity}" th:text="${entity}"></option>
+        </select>
+    </div>
+    <div>
+        <label for="join">Join Type:</label>
+        <select th:field="*{join}">
+            <option value="Nothing">Nothing</option>
+            <option value="Join">Join</option>
+            <option value="Inner Join">Inner Join</option>
+            <option value="Outer Join">Outer Join</option>
+            <!-- Add other options for join types here -->
+        </select>
+    </div>
+    <div id="columns">
+        <label for="columns">Columns:</label>
+        <select id="columnsSelect" name="columns" multiple="multiple" th:field="*{columns}" class="form-control">
+            <option value="" disabled="true" selected="true">Select columns</option>
+            <option value="column1">Column1</option>
+            <option value="column2">Column2</option>
+            <option value="column3">Column3</option>
+            <!-- Other columns for the selected entity will be added dynamically using JavaScript -->
+        </select>
+    </div>
+    <div>
+        <label for="filters">Filters:</label>
+        <select th:field="*{filters}">
+            <option value="NO FILTER">NO FILTER</option>
+            <option value="ON">ON</option>
+            <option value="IN">IN</option>
+            <option value="AND">AND</option>
+            <option value="IS">IS</option>
+            <option value="GROUP BY">GROUP BY</option>
+            <option value="ORDER BY">ORDER BY</option>
+            <option value="HAVING">HAVING</option>
+        </select>
+    </div>
+    <button type="submit">Submit</button>
+    <div th:if="${queryString}">
+        <h2>Query String:</h2>
+        <p th:text="${queryString}"></p>
+    </div>
+    <div class="text-center">
+        <a href="/query-form" class="btn btn-primary">Back to Query Builder</a>
+    </div>
+</form>
+</body>
+</html>
